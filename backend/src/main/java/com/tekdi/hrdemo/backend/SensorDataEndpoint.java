@@ -81,29 +81,24 @@ public class SensorDataEndpoint {
         // Objectify ID generator, e.g. long or String, then you should generate the unique ID yourself prior to saving.
         //
         // If your client provides the ID then you should probably use PUT instead.
-        //sensorData.setSensorData("data2");
-        //sensorData.setDataBlob(sensorData.getSensorData().getBytes());
-        //logger.info("blob save:"+sensorData.getDataBlob().getBytes().toString());
 
         Text t = new Text(sensorData.getSensorData());
-
-        //sensorData.setSensorText(t);
-
-        sensorData.setDummy("dummy4");
         sensorData.setSensorText(t);
-        logger.info("dummy="+sensorData.getDummy()+","+"text="+sensorData.getSensorText().toString());
 
-        ofy().save().entity(sensorData).now();
-        logger.info("Created SensorData with ID: " + sensorData.getId());
-        logger.info("sensordata: " + sensorData.getSensorData());
+        // Process algo
 
         sensorData.setResult("done");
 
-        //SensorData savedData = ofy().load().entity(sensorData).now();
-        //logger.info("blob load:"+savedData.getDataBlob().getBytes().toString());
+        ofy().save().entity(sensorData).now();
+        logger.info("Created SensorData with ID: " + sensorData.getId());
 
+        SensorData returnData = ofy().load().entity(sensorData).now();
 
-        return ofy().load().entity(sensorData).now();
+        logger.info("sensordata: " + returnData.getSensorData());
+
+        return returnData;
+
+        //return ofy().load().entity(sensorData).now();
     }
 
     /**

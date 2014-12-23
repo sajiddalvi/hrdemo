@@ -13,10 +13,9 @@ public class SensorData {
     @Id
     Long id;
     String devRegId;
-    String sensorData;
     String result;
+    String sensorData;
     Text sensorText;
-    String dummy;
 
     public Long getId() {
         return id;
@@ -26,23 +25,13 @@ public class SensorData {
         return devRegId;
     }
 
-    public String getSensorData() {
-        return sensorData;
-    }
-
     public String getResult() {
         return result;
     }
 
+    public String getSensorData() { return sensorData; }
+
     public Text getSensorText() { return sensorText;}
-
-    public void setDummy(String dummy) {
-        this.dummy = dummy;
-    }
-
-    public String getDummy() {
-        return dummy;
-    }
 
     public void setId(Long id) {
         this.id = id;
@@ -52,12 +41,12 @@ public class SensorData {
         this.devRegId = devRegId;
     }
 
-    public void setSensorData(String dataMap) {
-        this.sensorData = dataMap;
-    }
-
     public void setResult(String result) {
         this.result = result;
+    }
+
+    public void setSensorData(String sensorData) {
+        this.sensorData = sensorData;
     }
 
     public void setSensorText(Text sensorText) {

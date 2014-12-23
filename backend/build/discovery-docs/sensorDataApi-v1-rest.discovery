@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"c05bU6zpvXPOpQakG5gG3IOJh8Y/8tuSDntXPtkbUPcqRh6PUBUtGaA\"",
+ "etag": "\"c05bU6zpvXPOpQakG5gG3IOJh8Y/C_orj8cx8ww48GusjdDhmExrgvw\"",
  "discoveryVersion": "v1",
  "id": "sensorDataApi:v1",
  "name": "sensorDataApi",
@@ -93,9 +93,6 @@
    "type": "object",
    "properties": {
     "devRegId": {
-     "type": "string"
-    },
-    "dummy": {
      "type": "string"
     },
     "id": {
