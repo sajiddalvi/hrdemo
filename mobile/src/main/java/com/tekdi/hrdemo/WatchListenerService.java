@@ -27,7 +27,6 @@ public class WatchListenerService extends WearableListenerService {
 
                 Log.v(TAG, "DataMap received on phone: " + dataMap.toString());
 
-
                 SensorDataEndpointAsyncTask l = new SensorDataEndpointAsyncTask(this);
                 SensorData data = new SensorData();
                 String str = dataMap.toString();
@@ -40,24 +39,6 @@ public class WatchListenerService extends WearableListenerService {
                 l.execute(new Pair<Context, SensorData>(this, data));
 
 
-/*                ArrayList<DataMap> sensor_data_buffer = dataMap.getDataMapArrayList("sensor_data_buffer");
-
-                for (DataMap data : sensor_data_buffer) {
-                    Long timestamp;
-                    Float x,y,z;
-
-                    timestamp = dataMap.getLong("timestamp");
-                    x = dataMap.getFloat("x");
-                    y = dataMap.getFloat("y");
-                    z = dataMap.getFloat("z");
-
-                    Log.v(TAG,timestamp.toString()+","+
-                            x.toString()+","+
-                            y.toString()+","+
-                            z.toString());
-                }*/
-
-                //new EndpointsAsyncTask().execute(new Pair<Context, String>(this, dataMap.toString()));
             }
         }
     }

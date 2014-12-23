@@ -5,12 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.google.android.gms.wearable.MessageApi;
-import com.google.android.gms.wearable.Node;
-import com.google.android.gms.wearable.NodeApi;
-import com.google.android.gms.wearable.Wearable;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
@@ -26,7 +21,8 @@ class GcmRegistrationAsyncTask extends AsyncTask<Context, Void, String> {
     private static Registration regService = null;
     private GoogleCloudMessaging gcm;
     private Context context;
-    private GoogleApiClient mApiClient;
+
+    private MainActivity caller;
 
     private static final String TAG = "HR_DEMO_PHONE";
 
@@ -36,13 +32,9 @@ class GcmRegistrationAsyncTask extends AsyncTask<Context, Void, String> {
     public GcmRegistrationAsyncTask(Context context) {
         this.context = context;
 
-        Log.v(TAG,"GcmRegistrationAsyncTask");
+        Log.v(TAG,"GcmRegistrationAsyncTask context");
 
-        mApiClient = new GoogleApiClient.Builder(context )
-                .addApi( Wearable.API )
-                .build();
-
-        mApiClient.connect();
+        this.caller = (MainActivity) context;
 
 
     }
@@ -99,21 +91,10 @@ class GcmRegistrationAsyncTask extends AsyncTask<Context, Void, String> {
         Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
         Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
 
+        caller.registrationDone(msg);
+
         Log.v(TAG,"post execute " + msg);
-        sendMessage("/registration","success");
 
     }
 
-    private void sendMessage( final String path, final String text ) {
-        new Thread( new Runnable() {
-            @Override
-            public void run() {
-                NodeApi.GetConnectedNodesResult nodes = Wearable.NodeApi.getConnectedNodes( mApiClient ).await();
-                for(Node node : nodes.getNodes()) {
-                    MessageApi.SendMessageResult result = Wearable.MessageApi.sendMessage(
-                            mApiClient, node.getId(), path, text.getBytes() ).await();
-                }
-            }
-        }).start();
-    }
 }
