@@ -14,6 +14,15 @@ import com.tekdi.hrdemo.backend.sensorDataApi.model.SensorData;
 public class WatchListenerService extends WearableListenerService {
 
     private static final String TAG = "HR_DEMO_PHONE";
+    private WatchConnection mWatchConnection ;
+
+    @Override
+    public void onCreate(){
+        super.onCreate();
+        Log.v(TAG, "WearableListenerService OnCreate ");
+        mWatchConnection = new WatchConnection(this.getApplicationContext());
+
+    }
 
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
@@ -38,8 +47,13 @@ public class WatchListenerService extends WearableListenerService {
 
                 l.execute(new Pair<Context, SensorData>(this, data));
 
-
             }
         }
+    }
+
+    public void onServerDataReceived(String result){
+        Log.v(TAG,"onServerDataReceived:"+result);
+        mWatchConnection.sendMessage("/serverdata",result);
+
     }
 }

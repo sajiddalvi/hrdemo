@@ -187,12 +187,15 @@ public class MainActivity extends Activity implements
 
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
+
+        final String message = new String(messageEvent.getData());
+
         if (messageEvent.getPath().equals("/registration")) {
-            Log.v(TAG,"registered with server");
+            Log.v(TAG,"registered with server"+message);
             mRegistered = true;
         }
         if (messageEvent.getPath().equals("/serverdata")) {
-            Log.v(TAG,"got data back from server.");
+            Log.v(TAG,"got data back from server."+message);
             mSensorManager.unregisterListener(this);
         }
     }
