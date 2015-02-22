@@ -23,6 +23,7 @@ class GcmRegistrationAsyncTask extends AsyncTask<Context, Void, String> {
     private Context context;
 
     private MainActivity caller;
+    private String regId;
 
     private static final String TAG = "HR_DEMO_PHONE";
 
@@ -67,7 +68,7 @@ class GcmRegistrationAsyncTask extends AsyncTask<Context, Void, String> {
             if (gcm == null) {
                 gcm = GoogleCloudMessaging.getInstance(context);
             }
-            String regId = gcm.register(SENDER_ID);
+            regId = gcm.register(SENDER_ID);
             msg = "Device registered, registration ID=" + regId;
 
             Log.v(TAG,"execute "+msg);
@@ -91,7 +92,7 @@ class GcmRegistrationAsyncTask extends AsyncTask<Context, Void, String> {
         Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
         Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
 
-        caller.registrationDone(msg);
+        caller.registrationDone(regId);
 
         Log.v(TAG,"post execute " + msg);
 

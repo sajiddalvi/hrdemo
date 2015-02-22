@@ -11,16 +11,19 @@ public class MainActivity extends ActionBarActivity {
 
     private static final String TAG = "HR_DEMO_PHONE";
     private WatchConnection mWatchConnection ;
-
+    //private String devRegId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.v(TAG,"starting phone app");
+        Log.v(TAG, "starting phone app");
 
-        new GcmRegistrationAsyncTask(this).execute();
+        if ((Prefs.getDeviceRegIdPref(this)) == "") {
+            Log.v(TAG,"register new device");
+            new GcmRegistrationAsyncTask(this).execute();
+        }
 
         mWatchConnection = new WatchConnection(this.getApplicationContext());
 
@@ -49,9 +52,10 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void registrationDone(String result) {
-        Log.v(TAG,"registration done");
-
-        mWatchConnection.sendMessage("/registration","success");
+    public void registrationDone(String regId) {
+        Log.v(TAG,"registration done " + regId);
+        Prefs.setDeviceIdRegPref(this,regId);
+        //this.setDevRegId(regId);
+        //mWatchConnection.sendMessage("/registration","success");
     }
 }

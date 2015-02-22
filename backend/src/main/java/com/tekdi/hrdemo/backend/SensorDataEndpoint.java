@@ -11,7 +11,13 @@ import com.google.appengine.api.datastore.Text;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.cmd.Query;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -38,6 +44,38 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
         )
 )
 public class SensorDataEndpoint {
+
+    enum chunk_type {CHUNK_START, CHUNK_CONT, CHUNK_END, CHUNK_ALL_IN_ONE};
+
+    // Data object to be sent from EKG capture device to analysis application
+    private class ekg_source_data {
+        int type;    // indicates start, middle, or end of stream, or all-in-one chunk
+        int chunk_seq_num;       // chunk sequence number (don't care for all-in-one)
+        int fs;                  // sampling frequency of raw EKG data
+        int nbits;               // number of bits used for each sample; default = 24 bits in 32 bit int (MSB)
+        int len;                 // length of individual chunk
+        int data;                // pointer to raw EKG data samples
+    }
+
+    // Data object to be sent from analysis application to EKG display device
+    private class ekg_results_data {
+        float heart_rate_bpm;    // analyzed heart rate in beats per minute
+        float heart_rate_var;    // analyzed heart rate variability: SD of successive differences (in beats per minute)
+        float hrv_rmssd;         // (not needed externally ???)
+        float hrv_sdsd;          // (not needed externally ???)
+        float quality_metric;    // overall EKG trace quality indicator
+        int fs;                  // sampling frequency of EKG median data
+        int nbits;               // number of bits used for each sample; default = 24 bits in 32 bit int (MSB)
+        int len;                 // length of median EKG waveform
+        int data;               // pointer to normalized median EKG waveform for display
+    };
+
+    private class ekg_state_data {
+        int fs;                  // sampling frequency
+        int nbits;               // number of bits used for each sample; default = 24 bits in 32 bit int (MSB)
+        int len;                 // length of raw EKG waveform
+        int data;               // pointer to raw EKG data (concatenated chunks)
+    };
 
     private static final Logger logger = Logger.getLogger(SensorDataEndpoint.class.getName());
 
@@ -83,11 +121,50 @@ public class SensorDataEndpoint {
         // If your client provides the ID then you should probably use PUT instead.
 
         Text t = new Text(sensorData.getSensorData());
-        sensorData.setSensorText(t);
+
+        logger.info("inserting data");
 
         // Process algo
 
-        sensorData.setResult("done");
+        String returnValue = "-1";
+
+        JSONParser parser = new JSONParser();
+
+        try {
+            Object obj = parser.parse(sensorData.getSensorData());
+            JSONObject jsonObject = (JSONObject) obj;
+            String jsonId = (String) jsonObject.get("regId");
+            logger.info("json id = "+jsonId);
+
+            JSONArray jsonDataArray = (JSONArray) jsonObject.get("sensor_data_buffer");
+            Iterator<JSONObject> iterator = jsonDataArray.iterator();
+
+            Long data;
+            ekg_source_data eData = new ekg_source_data();
+            ekg_results_data eResult = new ekg_results_data();
+            ekg_state_data eState = new ekg_state_data();
+
+            while (iterator.hasNext()) {
+                JSONObject jsonData = iterator.next();
+
+                data = (Long)jsonData.get("x");
+
+                eData.data = data.intValue();
+                this.ekg_detect(eData, eResult, eState);
+            }
+
+            Float bpm = eResult.heart_rate_bpm;
+            Float hrv = eResult.heart_rate_var;
+
+            returnValue = "hr="+bpm.toString();
+
+           // returnValue = "done";
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        sensorData.setResult(returnValue);
 
         ofy().save().entity(sensorData).now();
         logger.info("Created SensorData with ID: " + sensorData.getId());
@@ -171,4 +248,27 @@ public class SensorDataEndpoint {
             throw new NotFoundException("Could not find SensorData with ID: " + id);
         }
     }
+
+
+    private void ekg_detect
+    (
+             ekg_source_data  ekg_in,
+             ekg_results_data ekg_out,
+             ekg_state_data   ekg_state
+    )
+    {
+
+                // store output results
+                ekg_out.heart_rate_bpm = 60;
+                ekg_out.heart_rate_var = 1;
+                ekg_out.hrv_rmssd      = 2;
+                ekg_out.hrv_sdsd       = 3;
+
+
+
+        return;
+    }
+
+
 }
+

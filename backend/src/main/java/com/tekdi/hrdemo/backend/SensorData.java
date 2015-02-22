@@ -1,6 +1,5 @@
 package com.tekdi.hrdemo.backend;
 
-import com.google.appengine.api.datastore.Text;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 
@@ -15,7 +14,6 @@ public class SensorData {
     String devRegId;
     String result;
     String sensorData;
-    Text sensorText;
 
     public Long getId() {
         return id;
@@ -31,7 +29,6 @@ public class SensorData {
 
     public String getSensorData() { return sensorData; }
 
-    public Text getSensorText() { return sensorText;}
 
     public void setId(Long id) {
         this.id = id;
@@ -47,10 +44,6 @@ public class SensorData {
 
     public void setSensorData(String sensorData) {
         this.sensorData = sensorData;
-    }
-
-    public void setSensorText(Text sensorText) {
-        this.sensorText = sensorText;
     }
 
 }

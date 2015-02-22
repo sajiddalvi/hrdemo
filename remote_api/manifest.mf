@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Main-Class: RemoteApiExample
+Class-Path: appengine-api.jar appengine-remote-api.jar guava-17.0.jar json-simple-1.1.jar objectify-5.0.3.jar
